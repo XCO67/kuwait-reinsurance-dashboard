@@ -144,11 +144,11 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
         let world;
         try {
           world = await d3.json('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson');
-        } catch (firstError) {
+        } catch {
           console.log('First source failed, trying alternative...');
           try {
             world = await d3.json('https://raw.githubusercontent.com/d3/d3.github.io/master/world-110m.v1.json');
-          } catch (secondError) {
+          } catch {
             console.log('Second source failed, using fallback...');
             // Fallback to a simple world map
             world = {
@@ -196,12 +196,12 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
         const countries = world;
 
         // Create country paths
-        const countryPaths = mapGroup.selectAll('path')
+        mapGroup.selectAll('path')
           .data(countries.features)
           .enter()
           .append('path')
           .attr('d', path)
-          .attr('fill', (d: any) => {
+          .attr('fill', (d: { properties: { NAME?: string; NAME_LONG?: string; name?: string; ADMIN?: string } }) => {
             const countryName = d.properties.NAME || d.properties.NAME_LONG || d.properties.name || d.properties.ADMIN;
             const countryData = countryDataMap.get(countryName?.toLowerCase());
             return countryData ? getColor(countryData.policyCount) : '#f8fafc';
@@ -210,7 +210,7 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
           .attr('stroke-width', 0.8)
           .style('cursor', 'pointer')
           .style('transition', 'all 0.2s ease')
-          .on('mouseover', function(event, d: any) {
+          .on('mouseover', function(event, d: { properties: { NAME?: string; NAME_LONG?: string; name?: string; ADMIN?: string } }) {
             const countryName = d.properties.NAME || d.properties.NAME_LONG || d.properties.name || d.properties.ADMIN;
             const countryData = countryDataMap.get(countryName?.toLowerCase());
             
@@ -232,7 +232,7 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
               onCountryHover?.(countryData);
             }
           })
-          .on('mouseout', function(event, d: any) {
+          .on('mouseout', function() {
             // Remove highlight with smooth transition
             d3.select(this)
               .attr('stroke', '#ffffff')
@@ -243,14 +243,14 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
             setTooltip(null);
             onCountryHover?.(null);
           })
-          .on('click', function(event, d: any) {
+          .on('click', function(event, d: { properties: { NAME?: string; NAME_LONG?: string; name?: string; ADMIN?: string } }) {
             // Prevent drag when clicking on countries
             event.stopPropagation();
             const countryName = d.properties.NAME || d.properties.NAME_LONG || d.properties.name || d.properties.ADMIN;
             const countryData = countryDataMap.get(countryName?.toLowerCase());
             onCountryClick?.(countryData || null);
           })
-          .on('mousedown', function(event, d: any) {
+          .on('mousedown', function(event) {
             // Prevent drag when clicking on countries
             event.stopPropagation();
             setIsDragging(false);
@@ -268,7 +268,7 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
     };
 
     loadWorldMap();
-  }, [data, countryDataMap, maxPolicies, getColor]); // Depend on memoized values
+  }, [data, countryDataMap, maxPolicies, getColor, handleWheel, handleMouseDown, handleMouseMove, isDragging, onCountryClick, onCountryHover]); // Depend on memoized values
 
   // Apply zoom and pan transformations
   useEffect(() => {
