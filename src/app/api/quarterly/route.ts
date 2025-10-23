@@ -154,7 +154,7 @@ function parseCSVData(csvContent: string): ReinsuranceData[] {
       countryName: values[countryIndex] || '',
       region: values[regionIndex] || '',
       hub: values[hubIndex] || '',
-      inceptionYear: safeParseInt(values[inceptionYearIndex]),
+      inceptionYear: safeParseInt(values[inceptionYearIndex] || ''),
       inceptionQuarter: values[inceptionQuarterIndex] || '',
       inceptionMonth: values[inceptionMonthIndex] || '',
       comDate: values[comDateIndex] || ''
