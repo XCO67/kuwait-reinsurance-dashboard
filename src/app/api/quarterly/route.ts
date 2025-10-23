@@ -25,7 +25,7 @@ async function loadCSVData(): Promise<ReinsuranceData[]> {
       await fs.stat(testPath);
       csvPath = testPath;
       break;
-    } catch (error) {
+    } catch {
       // Continue to next path
     }
   }
@@ -252,26 +252,6 @@ function normalizeTimeData(record: ReinsuranceData): { year: number; quarter: st
   return { year, quarter };
 }
 
-// Get quarter from date (fallback method)
-function getQuarterFromDate(dateStr: string): number {
-  if (!dateStr) return 0;
-  
-  try {
-    const date = new Date(dateStr);
-    const month = date.getMonth() + 1; // 1-12
-    return Math.ceil(month / 3);
-  } catch {
-    return 0;
-  }
-}
-
-// Get quarter from inception quarter string (legacy method)
-function getQuarterFromString(quarterStr: string): number {
-  if (!quarterStr) return 0;
-  
-  const match = quarterStr.match(/Q(\d)/);
-  return match ? parseInt(match[1]) : 0;
-}
 
 export async function GET(req: Request) {
   try {
@@ -327,7 +307,7 @@ export async function GET(req: Request) {
     }
 
     // Group data by quarter according to spec
-    const quarterlyGroups: Record<string, any[]> = {
+    const quarterlyGroups: Record<string, ReinsuranceData[]> = {
       'Q1': [],
       'Q2': [],
       'Q3': [],
@@ -349,7 +329,20 @@ export async function GET(req: Request) {
     });
 
     // Calculate quarterly metrics according to spec
-    const quarters: Record<number, any> = {};
+    const quarters: Record<number, {
+      quarter: number;
+      year: number;
+      policyCount: number;
+      premium: number;
+      acquisition: number;
+      paidClaims: number;
+      osLoss: number;
+      incurredClaims: number;
+      technicalResult: number;
+      lossRatioPct: number;
+      acquisitionPct: number;
+      combinedRatioPct: number;
+    }> = {};
     let totalPolicyCount = 0;
     let totalPremium = 0;
     let totalAcquisition = 0;

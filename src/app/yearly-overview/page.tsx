@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,12 +17,7 @@ import {
   Download,
   RefreshCw,
   Loader2,
-  Calendar,
-  TrendingUp,
-  TrendingDown,
   Clock,
-  Building,
-  Users,
   DollarSign,
   AlertTriangle,
   Target,
@@ -145,14 +139,14 @@ export default function YearlyOverviewPage() {
   };
 
   // Get trend icon and color
-  const getTrendIcon = (trend: any) => {
+  const getTrendIcon = (trend: { isSignificant: boolean; direction: string } | null) => {
     if (!trend || !trend.isSignificant) return null;
     return trend.direction === 'up' ? 
       <ArrowUpRight className="w-4 h-4 text-green-600" /> : 
       <ArrowDownRight className="w-4 h-4 text-red-600" />;
   };
 
-  const getTrendColor = (trend: any) => {
+  const getTrendColor = (trend: { isSignificant: boolean; direction: string } | null) => {
     if (!trend || !trend.isSignificant) return 'text-muted-foreground';
     return trend.direction === 'up' ? 'text-green-600' : 'text-red-600';
   };
@@ -464,4 +458,5 @@ export default function YearlyOverviewPage() {
     </div>
   );
 }
+
 

@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { 
   Select, 
   SelectContent, 
@@ -14,17 +12,10 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { 
-  Download, 
-  Filter, 
   Calendar,
-  TrendingUp,
-  TrendingDown,
   Minus,
   Loader2,
-  RefreshCw,
-  ChevronDown,
   Clock,
-  BarChart3,
   AlertCircle
 } from "lucide-react";
 import { formatKD, formatPct, formatNumber } from "@/lib/format";
@@ -68,13 +59,6 @@ export default function MonthlyOverviewPage() {
   const [loading, setIsLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const getMonthNumber = (monthName: string): number => {
-    const monthMap: Record<string, number> = {
-      'JAN': 1, 'FEB': 2, 'MAR': 3, 'APR': 4, 'MAY': 5, 'JUN': 6,
-      'JUL': 7, 'AUG': 8, 'SEP': 9, 'OCT': 10, 'NOV': 11, 'DEC': 12
-    };
-    return monthMap[monthName.toUpperCase()] || 0;
-  };
 
   const getMonthFromDate = (dateString: string): number => {
     const date = new Date(dateString);
@@ -148,7 +132,7 @@ export default function MonthlyOverviewPage() {
 
     // Calculate metrics for each month
     const monthlyData: MonthlyData[] = [];
-    let totals = {
+    const totals = {
       policyCount: 0,
       grossPremium: 0,
       acquisitionCostPercent: 0,

@@ -25,7 +25,7 @@ async function loadCSVData(): Promise<ReinsuranceData[]> {
       await fs.stat(testPath);
       csvPath = testPath;
       break;
-    } catch (error) {
+    } catch {
       // Continue to next path
     }
   }
@@ -202,7 +202,23 @@ export async function GET(req: Request) {
     });
 
     // Calculate country metrics
-    const countries: any[] = [];
+    const countries: Array<{
+      country: string;
+      policyCount: number;
+      premium: number;
+      acquisition: number;
+      paidClaims: number;
+      osLoss: number;
+      incurredClaims: number;
+      technicalResult: number;
+      lossRatioPct: number;
+      acquisitionPct: number;
+      combinedRatioPct: number;
+      brokers: string[];
+      cedants: string[];
+      regions: string[];
+      hubs: string[];
+    }> = [];
     let totalPolicyCount = 0;
     let totalPremium = 0;
     let totalAcquisition = 0;
@@ -295,4 +311,5 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Failed to fetch world map data' }, { status: 500 });
   }
 }
+
 

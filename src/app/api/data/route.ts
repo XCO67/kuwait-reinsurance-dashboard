@@ -98,7 +98,7 @@ async function loadCSVData(): Promise<ReinsuranceData[]> {
       await fs.stat(testPath);
       csvPath = testPath;
       break;
-    } catch (error) {
+    } catch {
       // Continue to next path
     }
   }

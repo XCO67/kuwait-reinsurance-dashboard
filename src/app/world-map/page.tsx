@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,13 +10,6 @@ import {
   RefreshCw,
   Loader2,
   Clock,
-  Globe,
-  Users,
-  DollarSign,
-  AlertTriangle,
-  Target,
-  TrendingUp,
-  Building,
   BarChart3
 } from 'lucide-react';
 import { formatKD, formatPct, formatNumber } from '@/lib/format';
@@ -117,12 +109,6 @@ export default function WorldMapPage() {
     loadWorldData();
   };
 
-  // Get color class for ratio metrics
-  const getRatioColor = (value: number) => {
-    if (value > 100) return 'text-red-600';
-    if (value > 80) return 'text-yellow-600';
-    return 'text-green-600';
-  };
 
   // Get badge variant for ratios
   const getRatioBadgeVariant = (value: number) => {

@@ -282,7 +282,7 @@ export default function ClientOverviewPage() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   // Filtering algorithm according to spec: union-within, intersection-across
   const filteredData = useMemo(() => {
@@ -298,7 +298,7 @@ export default function ClientOverviewPage() {
     Object.entries(filters).forEach(([facet, selections]) => {
       if (selections.length === 0) return; // Skip empty filters
       
-      let facetIndices = new Set<number>();
+      const facetIndices = new Set<number>();
       
       // UNION within facet (all selections for this facet)
       selections.forEach((selection: string) => {
@@ -340,7 +340,7 @@ export default function ClientOverviewPage() {
     console.log('Client Overview - Filtering results:', {
       totalRows: normalizedRows.length,
       filteredRows: filteredRows.length,
-      activeFilters: Object.entries(filters).filter(([_, values]) => values.length > 0)
+      activeFilters: Object.entries(filters).filter(([, values]) => values.length > 0)
     });
     
     return filteredRows;
@@ -409,7 +409,7 @@ export default function ClientOverviewPage() {
     console.log('Client Overview - Processing filtered data:', {
       totalRecords: filteredData.length,
       sampleRecord: filteredData[0],
-      activeFilters: Object.entries(filters).filter(([key, values]) => values.length > 0),
+      activeFilters: Object.entries(filters).filter(([, values]) => values.length > 0),
       clientType: clientType
     });
 
@@ -521,7 +521,7 @@ export default function ClientOverviewPage() {
       totals: totalsRow,
       grandTotal: grandTotalRow
     };
-  }, [filteredData, clientType, maxClients]);
+  }, [filteredData, clientType, maxClients, filters]);
 
   // Handle filter changes
   const handleFilterChange = (filterType: keyof FilterState, values: string[]) => {

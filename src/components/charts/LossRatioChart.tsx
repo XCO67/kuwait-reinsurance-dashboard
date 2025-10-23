@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { formatPct } from '@/lib/format';
 import { ReinsuranceData } from '@/lib/schema';
-import { Target, TrendingDown, AlertTriangle } from 'lucide-react';
+import { Target, AlertTriangle } from 'lucide-react';
 
 interface LossRatioBarChartProps {
   data: ReinsuranceData[];

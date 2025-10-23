@@ -25,29 +25,14 @@ export default function AnalyticsPage() {
   const [entitySearchTerm, setEntitySearchTerm] = useState('');
   const [tableSearchTerm, setTableSearchTerm] = useState('');
 
-  // Function to reload all data
-  const reloadData = async () => {
-    setIsLoading(true);
-    try {
-      const dataResponse = await fetch('/api/data?limit=5000');
-      const dataResult = await dataResponse.json();
-      console.log('Analytics - Reloaded all data:', dataResult.data.length, 'records');
-      setData(dataResult.data);
-    } catch (error) {
-      console.error('Failed to reload data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // Load CSV data
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        // Load dimensions for filter options
-        const dimensionsResponse = await fetch('/api/dimensions');
-        const dimensionsData = await dimensionsResponse.json();
+        // Load dimensions for filter options (currently not used but kept for future functionality)
+        await fetch('/api/dimensions');
         
         // Load data for all years
         const dataResponse = await fetch('/api/data?limit=5000');

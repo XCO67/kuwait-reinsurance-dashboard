@@ -36,7 +36,7 @@ export function PremiumByExtTypeDonut({ data, className }: PremiumByExtTypeDonut
   const totalPremium = chartData.reduce((sum, item) => sum + item.value, 0);
   const topExtType = chartData[0];
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       const percentage = totalPremium > 0 ? ((data.value / totalPremium) * 100).toFixed(1) : '0.0';
@@ -63,7 +63,7 @@ export function PremiumByExtTypeDonut({ data, className }: PremiumByExtTypeDonut
     return null;
   };
 
-  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: { cx: number; cy: number; midAngle: number; innerRadius: number; outerRadius: number; percent: number }) => {
     if (percent < 0.05) return null; // Don't show labels for slices < 5%
     
     const RADIAN = Math.PI / 180;

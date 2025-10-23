@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,18 +20,11 @@ import {
   TableRow
 } from '@/components/ui/table';
 import {
-  BarChart3,
-  Download,
   RefreshCw,
   Loader2,
   Calendar,
-  TrendingUp,
-  TrendingDown,
   Clock,
-  Filter,
   ChevronDown,
-  Building,
-  Users,
   DollarSign,
   AlertTriangle
 } from 'lucide-react';
@@ -84,7 +76,14 @@ export default function QuarterlyOverviewPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedYear, setSelectedYear] = useState<string>('2021');
   const [availableYears, setAvailableYears] = useState<string[]>(['2019', '2020', '2021']);
-  const [filterOptions, setFilterOptions] = useState<any>({
+  const [filterOptions, setFilterOptions] = useState<{
+    country: string[];
+    hub: string[];
+    region: string[];
+    cedant: string[];
+    broker: string[];
+    insured: string[];
+  }>({
     country: [],
     hub: [],
     region: [],
@@ -224,9 +223,6 @@ export default function QuarterlyOverviewPage() {
     });
   };
 
-  const getQuarterLabel = (quarter: number) => {
-    return `Q${quarter}`;
-  };
 
   const getQuarterName = (quarter: number) => {
     const names = ['', 'Q1', 'Q2', 'Q3', 'Q4'];
@@ -248,12 +244,6 @@ export default function QuarterlyOverviewPage() {
   };
 
   // Calculate trend indicators
-  const getTrendIndicator = (current: number, previous: number) => {
-    if (previous === 0) return null;
-    const change = ((current - previous) / previous) * 100;
-    if (Math.abs(change) < 1) return null;
-    return change > 0 ? 'up' : 'down';
-  };
 
   return (
     <div className="min-h-screen bg-background">

@@ -5,6 +5,7 @@ import { BarChart3, TrendingUp, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function HomePage() {
 
@@ -25,9 +26,11 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="w-24 h-24 mx-auto mb-6"
             >
-              <img 
+              <Image 
                 src="/logo.png" 
                 alt="Kuwait Re" 
+                width={96}
+                height={96}
                 className="w-full h-full object-contain"
               />
             </motion.div>

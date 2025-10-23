@@ -25,7 +25,7 @@ async function loadCSVData(): Promise<ReinsuranceData[]> {
       await fs.stat(testPath);
       csvPath = testPath;
       break;
-    } catch (error) {
+    } catch {
       // Continue to next path
     }
   }
@@ -213,7 +213,19 @@ export async function GET(req: Request) {
     });
 
     // Calculate yearly metrics
-    const years: Record<number, any> = {};
+    const years: Record<number, {
+      year: number;
+      policyCount: number;
+      premium: number;
+      acquisition: number;
+      paidClaims: number;
+      osLoss: number;
+      incurredClaims: number;
+      technicalResult: number;
+      lossRatioPct: number;
+      acquisitionPct: number;
+      combinedRatioPct: number;
+    }> = {};
     let totalPolicyCount = 0;
     let totalPremium = 0;
     let totalAcquisition = 0;
@@ -299,4 +311,5 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Failed to fetch yearly data' }, { status: 500 });
   }
 }
+
 

@@ -13,15 +13,21 @@ import { TopCedantsList } from '@/components/charts/TopCedantsChart';
 import { TopBrokersList } from '@/components/charts/TopBrokersChart';
 import { FilterSummary } from '@/components/filters/FilterSummary';
 import { ReinsuranceData } from '@/lib/schema';
-import { aggregateKPIs, calculateUYPerformance, calculateUYPerformanceTotals, filterRecords } from '@/lib/kpi';
+import { aggregateKPIs, calculateUYPerformance, calculateUYPerformanceTotals } from '@/lib/kpi';
 // CSV data loading logic removed - new implementation will be added
 
 export default function DashboardPage() {
   const [data, setData] = useState<ReinsuranceData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState<Partial<Record<string, string[]>>>({});
-  const [availableYears, setAvailableYears] = useState<string[]>([]);
-  const [filterOptions, setFilterOptions] = useState<any>({});
+  const [filterOptions, setFilterOptions] = useState<{
+    years?: string[];
+    countries?: Array<{ label: string }>;
+    hubs?: Array<{ label: string }>;
+    regions?: Array<{ label: string }>;
+    cedants?: Array<{ label: string }>;
+    insureds?: Array<{ label: string }>;
+  }>({});
 
   // Function to clear filters and reload all data
   const clearFiltersAndReload = async () => {
@@ -68,7 +74,7 @@ export default function DashboardPage() {
         console.log('Dashboard - Loaded data:', dataResult.data.length, 'records');
         
         // Debug: Show years in the data
-        const yearsInData = [...new Set(dataResult.data.map((record: any) => record.uy))].sort();
+        const yearsInData = [...new Set(dataResult.data.map((record: ReinsuranceData) => record.uy))].sort();
         console.log('Dashboard - Years in data:', yearsInData);
         
         setData(dataResult.data);
