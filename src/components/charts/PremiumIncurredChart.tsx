@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { formatKD, formatPct } from '@/lib/format';
 import { ReinsuranceData } from '@/lib/schema';
-import { TrendingUp, DollarSign, AlertTriangle } from 'lucide-react';
+import { TrendingUp, AlertTriangle } from 'lucide-react';
 
 interface PremiumIncurredLineChartProps {
   data: ReinsuranceData[];
@@ -46,7 +46,7 @@ export function PremiumIncurredLineChart({ data, className }: PremiumIncurredLin
   const totalIncurred = chartData.reduce((sum, item) => sum + item.incurred, 0);
   const overallLossRatio = totalPremium > 0 ? (totalIncurred / totalPremium) * 100 : 0;
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ payload: { lossRatio: number; premium: number; incurred: number } }>; label?: string }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

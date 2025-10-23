@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatKD, formatPct } from '@/lib/format';
 import { ReinsuranceData } from '@/lib/schema';
-import { Users, Award, TrendingUp } from 'lucide-react';
+import { Users, Award } from 'lucide-react';
 
 interface TopBrokersListProps {
   data: ReinsuranceData[];

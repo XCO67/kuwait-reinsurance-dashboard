@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import * as d3 from 'd3';
 import { formatKD, formatPct, formatNumber } from '@/lib/format';
 
@@ -78,7 +78,7 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
   }, [maxPolicies]);
 
   // Handle zoom and pan with mouse-centered zoom
-  const handleWheel = (event: WheelEvent) => {
+  const handleWheel = useCallback((event: WheelEvent) => {
     event.preventDefault();
     const delta = event.deltaY > 0 ? 0.9 : 1.1;
     const newZoom = Math.max(0.5, Math.min(5, zoom * delta));
@@ -102,22 +102,22 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
     } else {
       setZoom(newZoom);
     }
-  };
+  }, [zoom, pan]);
 
-  const handleMouseDown = (event: MouseEvent) => {
+  const handleMouseDown = useCallback((event: MouseEvent) => {
     // Start dragging on any mouse down, but countries will prevent it
     setIsDragging(true);
     setDragStart({ x: event.clientX - pan.x, y: event.clientY - pan.y });
     event.preventDefault();
-  };
+  }, [pan]);
 
-  const handleMouseMove = (event: MouseEvent) => {
+  const handleMouseMove = useCallback((event: MouseEvent) => {
     if (isDragging) {
       const newPanX = event.clientX - dragStart.x;
       const newPanY = event.clientY - dragStart.y;
       setPan({ x: newPanX, y: newPanY });
     }
-  };
+  }, [isDragging, dragStart]);
 
   const handleMouseUp = () => {
     setIsDragging(false);
