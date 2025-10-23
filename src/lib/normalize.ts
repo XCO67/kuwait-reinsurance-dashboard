@@ -4,9 +4,9 @@ export function norm(v: string | null | undefined) {
   return s.length ? s : null;
 }
 
-export function toNum(v: string | null): number | null {
-  if (v == null) return null;
+export function toNum(v: string | null): number | undefined {
+  if (v == null) return undefined;
   const n = Number(v);
-  return Number.isFinite(n) ? n : null;
+  return Number.isFinite(n) ? n : undefined;
 }
 
