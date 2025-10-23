@@ -12,18 +12,8 @@ import { Search, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { ReinsuranceData } from '@/lib/schema';
 
 const FOCUSED_COLUMNS = [
-  { key: 'uy', label: 'UY', type: 'string' },
-  { key: 'extType', label: 'Ext Type', type: 'string' },
-  { key: 'broker', label: 'Broker', type: 'string' },
-  { key: 'cedant', label: 'Cedant', type: 'string' },
-  { key: 'orgInsuredTrtyName', label: 'Org.Insured/Trty Name', type: 'string' },
-  { key: 'maxLiabilityFC', label: 'Max Liability', type: 'number' },
-  { key: 'grossUWPrem', label: 'Gross UW Prem', type: 'number' },
-  { key: 'grossActualAcq', label: 'Gross Actual Acq', type: 'number' },
-  { key: 'grossOsLoss', label: 'Gross Os Loss', type: 'number' },
-  { key: 'countryName', label: 'Country Name', type: 'string' },
-  { key: 'region', label: 'Region', type: 'string' },
-  { key: 'hub', label: 'Hub', type: 'string' },
+  { key: 'uy', label: 'Underwriting Year', type: 'string' },
+  { key: 'countryName', label: 'Country', type: 'string' },
 ] as const;
 
 interface SimpleSearchFilterProps {
@@ -31,11 +21,7 @@ interface SimpleSearchFilterProps {
   onFiltersChange: (filters: Partial<Record<string, string[]>>) => void;
   filterOptions?: {
     years?: string[];
-    countries?: Array<{ label: string }>;
-    hubs?: Array<{ label: string }>;
-    regions?: Array<{ label: string }>;
-    cedants?: Array<{ label: string }>;
-    insureds?: Array<{ label: string }>;
+    countries?: Array<{ label: string; value: string }>;
   };
   className?: string;
 }
@@ -53,22 +39,14 @@ export function SimpleSearchFilter({ data, onFiltersChange, filterOptions, class
         case 'uy':
           return filterOptions.years || [];
         case 'countryName':
-          return filterOptions.countries?.map((c) => c.label) || [];
-        case 'hub':
-          return filterOptions.hubs?.map((h) => h.label) || [];
-        case 'region':
-          return filterOptions.regions?.map((r) => r.label) || [];
-        case 'cedant':
-          return filterOptions.cedants?.map((c) => c.label) || [];
-        case 'orgInsuredTrtyName':
-          return filterOptions.insureds?.map((i) => i.label) || [];
+          return filterOptions.countries?.map((c) => c.value) || [];
         default:
           break;
       }
     }
     
     // Fallback to extracting from data
-    const values = [...new Set(data.map(d => d[columnKey as keyof ReinsuranceData]).filter(v => v !== null && v !== undefined))];
+    const values = [...new Set(data.map(d => d[columnKey as keyof ReinsuranceData]).filter(v => v !== null && v !== undefined && v !== ''))];
     return values.sort();
   };
 

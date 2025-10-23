@@ -22,11 +22,7 @@ export default function DashboardPage() {
   const [filters, setFilters] = useState<Partial<Record<string, string[]>>>({});
   const [filterOptions, setFilterOptions] = useState<{
     years?: string[];
-    countries?: Array<{ label: string }>;
-    hubs?: Array<{ label: string }>;
-    regions?: Array<{ label: string }>;
-    cedants?: Array<{ label: string }>;
-    insureds?: Array<{ label: string }>;
+    countries?: Array<{ label: string; value: string }>;
   }>({});
 
   // Function to clear filters and reload all data
@@ -50,11 +46,6 @@ export default function DashboardPage() {
     const loadInitialData = async () => {
       setIsLoading(true);
       try {
-        // Load dimensions for filter options
-        const dimensionsResponse = await fetch('/api/dimensions');
-        const dimensionsData = await dimensionsResponse.json();
-        setFilterOptions(dimensionsData);
-        
         // Load data for all years (no year filter) - increase limit to get all data
         const dataResponse = await fetch(`/api/data?limit=5000`);
         
@@ -72,9 +63,18 @@ export default function DashboardPage() {
         
         console.log('Dashboard - Loaded data:', dataResult.data.length, 'records');
         
+        // Generate filter options from data
+        const years = [...new Set(dataResult.data.map((record: ReinsuranceData) => record.uy))].filter(Boolean).sort();
+        const countries = [...new Set(dataResult.data.map((record: ReinsuranceData) => record.countryName))].filter(Boolean).sort();
+        
+        setFilterOptions({
+          years,
+          countries: countries.map(country => ({ label: country, value: country }))
+        });
+        
         // Debug: Show years in the data
-        const yearsInData = [...new Set(dataResult.data.map((record: ReinsuranceData) => record.uy))].sort();
-        console.log('Dashboard - Years in data:', yearsInData);
+        console.log('Dashboard - Years in data:', years);
+        console.log('Dashboard - Countries in data:', countries);
         
         setData(dataResult.data);
       } catch (error) {
