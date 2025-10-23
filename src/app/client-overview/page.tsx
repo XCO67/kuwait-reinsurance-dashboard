@@ -46,7 +46,7 @@ interface NormalizedRow {
   broker: string | null;
   cedant: string | null;
   insured: string | null;
-  year: number | null;
+  year: number | undefined;
   
   // Key fields (lowercased for filtering)
   kCountry: string;
@@ -124,7 +124,7 @@ export default function ClientOverviewPage() {
       const key = (v: string | undefined | null): string => norm(v).toLowerCase();
       
       // Year extraction: use inception year or UY
-      const year = record.inceptionYear || (record.uy ? parseInt(record.uy) : null);
+      const year = record.inceptionYear || (record.uy ? parseInt(record.uy) : undefined);
       
       // Broker/cedant/insured: if empty → null
       const broker = record.broker && record.broker.trim() !== '' ? record.broker : null;
@@ -212,7 +212,7 @@ export default function ClientOverviewPage() {
       }
       
       // Year index
-      if (row.year !== null) {
+      if (row.year !== undefined) {
         if (!byYear.has(row.year)) byYear.set(row.year, []);
         byYear.get(row.year)!.push(index);
       }
