@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,14 @@ const FOCUSED_COLUMNS = [
 interface SimpleSearchFilterProps {
   data: ReinsuranceData[];
   onFiltersChange: (filters: Partial<Record<string, string[]>>) => void;
-  filterOptions?: any;
+  filterOptions?: {
+    years?: string[];
+    countries?: Array<{ label: string }>;
+    hubs?: Array<{ label: string }>;
+    regions?: Array<{ label: string }>;
+    cedants?: Array<{ label: string }>;
+    insureds?: Array<{ label: string }>;
+  };
   className?: string;
 }
 
@@ -46,15 +53,15 @@ export function SimpleSearchFilter({ data, onFiltersChange, filterOptions, class
         case 'uy':
           return filterOptions.years || [];
         case 'countryName':
-          return filterOptions.countries?.map((c: any) => c.label) || [];
+          return filterOptions.countries?.map((c) => c.label) || [];
         case 'hub':
-          return filterOptions.hubs?.map((h: any) => h.label) || [];
+          return filterOptions.hubs?.map((h) => h.label) || [];
         case 'region':
-          return filterOptions.regions?.map((r: any) => r.label) || [];
+          return filterOptions.regions?.map((r) => r.label) || [];
         case 'cedant':
-          return filterOptions.cedants?.map((c: any) => c.label) || [];
+          return filterOptions.cedants?.map((c) => c.label) || [];
         case 'orgInsuredTrtyName':
-          return filterOptions.insureds?.map((i: any) => i.label) || [];
+          return filterOptions.insureds?.map((i) => i.label) || [];
         default:
           break;
       }

@@ -4,13 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { 
   BarChart3, 
@@ -24,7 +22,6 @@ import {
   Sun,
   ChevronDown,
   Users,
-  Building,
   Globe
 } from "lucide-react";
 import Image from "next/image";

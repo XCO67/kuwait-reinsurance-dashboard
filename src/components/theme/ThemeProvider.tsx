@@ -16,7 +16,7 @@ export function ThemeProvider({
   ...props
 }: {
   children: React.ReactNode;
-  [key: string]: any;
+  [key: string]: unknown;
 }) {
   return (
     <NextThemeProvider
