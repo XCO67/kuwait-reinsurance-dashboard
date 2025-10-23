@@ -132,11 +132,11 @@ function parseCSVData(csvContent: string): ReinsuranceData[] {
       return isNaN(parsed) ? 0 : parsed;
     };
 
-    const safeParseInt = (value: string): number | null => {
-      if (!value || value.trim() === '') return null;
+    const safeParseInt = (value: string): number | undefined => {
+      if (!value || value.trim() === '') return undefined;
       const cleaned = value.replace(/[,\s]/g, '');
       const parsed = parseFloat(cleaned);
-      return isNaN(parsed) ? null : Math.floor(parsed);
+      return isNaN(parsed) ? undefined : Math.floor(parsed);
     };
 
     const record: ReinsuranceData = {
