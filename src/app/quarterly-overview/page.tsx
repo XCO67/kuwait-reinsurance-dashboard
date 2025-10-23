@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +27,10 @@ import {
   Clock,
   ChevronDown,
   DollarSign,
-  AlertTriangle
+  AlertTriangle,
+  Filter,
+  BarChart3,
+  Download
 } from 'lucide-react';
 import { formatKD, formatPct, formatNumber } from '@/lib/format';
 import { ChatBot } from '@/components/chat/ChatBot';

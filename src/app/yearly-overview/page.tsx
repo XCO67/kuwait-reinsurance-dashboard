@@ -22,7 +22,8 @@ import {
   AlertTriangle,
   Target,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Users
 } from 'lucide-react';
 import { formatKD, formatPct, formatNumber } from '@/lib/format';
 import { ChatBot } from '@/components/chat/ChatBot';

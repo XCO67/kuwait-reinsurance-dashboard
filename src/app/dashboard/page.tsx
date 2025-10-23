@@ -53,7 +53,6 @@ export default function DashboardPage() {
         // Load dimensions for filter options
         const dimensionsResponse = await fetch('/api/dimensions');
         const dimensionsData = await dimensionsResponse.json();
-        setAvailableYears(dimensionsData.years || []);
         setFilterOptions(dimensionsData);
         
         // Load data for all years (no year filter) - increase limit to get all data
