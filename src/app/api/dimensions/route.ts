@@ -146,7 +146,7 @@ export async function GET() {
     console.error('Dimensions API error:', error);
     return NextResponse.json({ 
       error: 'Failed to fetch dimensions',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
     }, { status: 500 });
   }
 }

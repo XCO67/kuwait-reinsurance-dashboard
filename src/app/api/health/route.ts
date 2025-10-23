@@ -17,7 +17,7 @@ export async function GET() {
       status: 'error',
       message: 'Health check failed',
       timestamp: new Date().toISOString(),
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
     }, { status: 500 });
   }
 }
