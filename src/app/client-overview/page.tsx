@@ -23,14 +23,11 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { 
-  Calendar,
   Download,
   RefreshCw,
   Filter,
   ChevronDown,
   Clock,
-  TrendingUp,
-  BarChart3,
   Users,
   Building
 } from 'lucide-react';
@@ -38,7 +35,6 @@ import { formatKD, formatPct } from '@/lib/format';
 import { ReinsuranceData } from '@/lib/schema';
 import { ChatBot } from '@/components/chat/ChatBot';
 
-type AggregationMode = 'year' | 'quarter' | 'month' | 'client';
 type ClientType = 'broker' | 'cedant';
 
 // Normalized row interface according to spec
@@ -104,7 +100,6 @@ export default function ClientOverviewPage() {
   const [normalizedRows, setNormalizedRows] = useState<NormalizedRow[]>([]);
   const [indexes, setIndexes] = useState<FilterIndexes | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [aggregationMode, setAggregationMode] = useState<AggregationMode>('client');
   const [clientType, setClientType] = useState<ClientType>('broker');
   const [maxClients, setMaxClients] = useState<number>(5);
   const [filters, setFilters] = useState<FilterState>({
@@ -544,27 +539,6 @@ export default function ClientOverviewPage() {
     });
   };
 
-  // Get aggregation label
-  const getAggregationLabel = (mode: AggregationMode) => {
-    switch (mode) {
-      case 'year': return 'Year';
-      case 'quarter': return 'Quarter';
-      case 'month': return 'Month';
-      case 'client': return 'Client';
-      default: return 'Client';
-    }
-  };
-
-  // Get aggregation icon
-  const getAggregationIcon = (mode: AggregationMode) => {
-    switch (mode) {
-      case 'year': return <Calendar className="w-4 h-4" />;
-      case 'quarter': return <BarChart3 className="w-4 h-4" />;
-      case 'month': return <TrendingUp className="w-4 h-4" />;
-      case 'client': return <Users className="w-4 h-4" />;
-      default: return <Users className="w-4 h-4" />;
-    }
-  };
 
   // Get color class for ratio metrics
   const getRatioColor = (value: number) => {
@@ -612,31 +586,6 @@ export default function ClientOverviewPage() {
                 <span>Last updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Loading...'}</span>
               </div>
 
-              {/* Aggregation Mode Toggle */}
-              <div className="flex items-center space-x-1 bg-muted rounded-lg p-1">
-                {(['year', 'quarter', 'month', 'client'] as AggregationMode[]).map((mode) => (
-                  <Button
-                    key={mode}
-                    variant={aggregationMode === mode ? 'default' : 'ghost'}
-                    size="sm"
-                    className="flex items-center space-x-1"
-                    onClick={() => {
-                      if (mode === 'year') {
-                        window.location.href = '/yearly-overview';
-                      } else if (mode === 'quarter') {
-                        window.location.href = '/quarterly-overview';
-                      } else if (mode === 'month') {
-                        window.location.href = '/monthly-overview';
-                      } else {
-                        setAggregationMode(mode);
-                      }
-                    }}
-                  >
-                    {getAggregationIcon(mode)}
-                    <span className="hidden sm:inline">{getAggregationLabel(mode)}</span>
-                  </Button>
-                ))}
-              </div>
             </div>
           </div>
         </div>

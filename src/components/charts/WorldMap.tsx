@@ -158,7 +158,7 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
           }
         }
         
-        if (!world || !world.features) {
+        if (!world || !(world as { features?: unknown[] }).features) {
           console.error('Failed to load world data');
           setIsLoading(false);
           return;
@@ -197,22 +197,24 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
 
         // Create country paths
         mapGroup.selectAll('path')
-          .data(countries.features)
+          .data((countries as { features: unknown[] }).features)
           .enter()
           .append('path')
-          .attr('d', path)
-          .attr('fill', (d: { properties: { NAME?: string; NAME_LONG?: string; name?: string; ADMIN?: string } }) => {
-            const countryName = d.properties.NAME || d.properties.NAME_LONG || d.properties.name || d.properties.ADMIN;
-            const countryData = countryDataMap.get(countryName?.toLowerCase());
+          .attr('d', (d: unknown) => path(d as any)) // eslint-disable-line @typescript-eslint/no-explicit-any
+          .attr('fill', (d: unknown) => {
+            const data = d as { properties: { NAME?: string; NAME_LONG?: string; name?: string; ADMIN?: string } };
+            const countryName = data.properties.NAME || data.properties.NAME_LONG || data.properties.name || data.properties.ADMIN;
+            const countryData = countryDataMap.get(countryName?.toLowerCase() || '');
             return countryData ? getColor(countryData.policyCount) : '#f8fafc';
           })
           .attr('stroke', '#ffffff')
           .attr('stroke-width', 0.8)
           .style('cursor', 'pointer')
           .style('transition', 'all 0.2s ease')
-          .on('mouseover', function(event, d: { properties: { NAME?: string; NAME_LONG?: string; name?: string; ADMIN?: string } }) {
-            const countryName = d.properties.NAME || d.properties.NAME_LONG || d.properties.name || d.properties.ADMIN;
-            const countryData = countryDataMap.get(countryName?.toLowerCase());
+          .on('mouseover', function(event, d: unknown) {
+            const data = d as { properties: { NAME?: string; NAME_LONG?: string; name?: string; ADMIN?: string } };
+            const countryName = data.properties.NAME || data.properties.NAME_LONG || data.properties.name || data.properties.ADMIN;
+            const countryData = countryDataMap.get(countryName?.toLowerCase() || '');
             
             if (countryData) {
               // Enhanced highlight on hover
@@ -243,11 +245,12 @@ export default function WorldMap({ data, onCountryHover, onCountryClick }: World
             setTooltip(null);
             onCountryHover?.(null);
           })
-          .on('click', function(event, d: { properties: { NAME?: string; NAME_LONG?: string; name?: string; ADMIN?: string } }) {
+          .on('click', function(event, d: unknown) {
+            const data = d as { properties: { NAME?: string; NAME_LONG?: string; name?: string; ADMIN?: string } };
             // Prevent drag when clicking on countries
             event.stopPropagation();
-            const countryName = d.properties.NAME || d.properties.NAME_LONG || d.properties.name || d.properties.ADMIN;
-            const countryData = countryDataMap.get(countryName?.toLowerCase());
+            const countryName = data.properties.NAME || data.properties.NAME_LONG || data.properties.name || data.properties.ADMIN;
+            const countryData = countryDataMap.get(countryName?.toLowerCase() || '');
             onCountryClick?.(countryData || null);
           })
           .on('mousedown', function(event) {

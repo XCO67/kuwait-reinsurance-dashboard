@@ -67,9 +67,6 @@ interface QuarterlyResponse {
 }
 
 interface FilterState {
-  country: string[];
-  hub: string[];
-  region: string[];
   cedant: string[];
   broker: string[];
   insured: string[];
@@ -78,27 +75,9 @@ interface FilterState {
 export default function QuarterlyOverviewPage() {
   const [quarterlyData, setQuarterlyData] = useState<QuarterlyResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedYear, setSelectedYear] = useState<string>('2021');
-  const [availableYears, setAvailableYears] = useState<string[]>(['2019', '2020', '2021']);
-  const [filterOptions, setFilterOptions] = useState<{
-    country: string[];
-    hub: string[];
-    region: string[];
-    cedant: string[];
-    broker: string[];
-    insured: string[];
-  }>({
-    country: [],
-    hub: [],
-    region: [],
-    cedant: [],
-    broker: [],
-    insured: []
-  });
+  const [selectedYear, setSelectedYear] = useState<string>('all');
+  const [availableYears, setAvailableYears] = useState<string[]>(['all', '2019', '2020', '2021']);
   const [filters, setFilters] = useState<FilterState>({
-    country: [],
-    hub: [],
-    region: [],
     cedant: [],
     broker: [],
     insured: []
@@ -114,21 +93,10 @@ export default function QuarterlyOverviewPage() {
         const response = await fetch('/api/dimensions');
         const data = await response.json();
         console.log('Quarterly Overview - Dimensions loaded:', {
-          countries: data.countries?.length || 0,
-          hubs: data.hubs?.length || 0,
-          regions: data.regions?.length || 0,
           cedants: data.cedants?.length || 0,
           brokers: data.brokers?.length || 0,
           insured: data.insureds?.length || 0,
           years: data.years?.length || 0
-        });
-        setFilterOptions({
-          country: data.countries || [],
-          hub: data.hubs || [],
-          region: data.regions || [],
-          cedant: data.cedants || [],
-          broker: data.brokers || [],
-          insured: data.insureds || []
         });
         setAvailableYears(data.years || []);
       } catch (error) {
@@ -146,9 +114,12 @@ export default function QuarterlyOverviewPage() {
       setIsLoading(true);
       try {
         console.log('Quarterly Overview - Loading data for year:', selectedYear);
-        const params = new URLSearchParams({
-          year: selectedYear
-        });
+        const params = new URLSearchParams();
+        
+        // Only add year parameter if not "all"
+        if (selectedYear !== 'all') {
+          params.append('year', selectedYear);
+        }
 
         const response = await fetch(`/api/quarterly?${params.toString()}`);
         console.log('Quarterly Overview - API response status:', response.status);
@@ -189,9 +160,12 @@ export default function QuarterlyOverviewPage() {
         setIsLoading(true);
         try {
           console.log('Quarterly Overview - Refreshing data for year:', selectedYear);
-          const params = new URLSearchParams({
-            year: selectedYear
-          });
+          const params = new URLSearchParams();
+          
+          // Only add year parameter if not "all"
+          if (selectedYear !== 'all') {
+            params.append('year', selectedYear);
+          }
 
           const response = await fetch(`/api/quarterly?${params.toString()}`);
           const data = await response.json();
@@ -208,19 +182,10 @@ export default function QuarterlyOverviewPage() {
   };
 
   // Handle filter changes
-  const handleFilterChange = (filterType: keyof FilterState, values: string[]) => {
-    setFilters(prev => ({
-      ...prev,
-      [filterType]: values
-    }));
-  };
 
   // Reset all filters
   const resetFilters = () => {
     setFilters({
-      country: [],
-      hub: [],
-      region: [],
       cedant: [],
       broker: [],
       insured: []
@@ -270,32 +235,6 @@ export default function QuarterlyOverviewPage() {
 
             {/* Right side - Controls */}
             <div className="flex items-center space-x-4">
-              {/* Year Selector */}
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-muted-foreground">Year:</span>
-                  <Select value={selectedYear} onValueChange={handleYearChange}>
-                    <SelectTrigger className="w-32 bg-primary/5 border-primary/20">
-                      <SelectValue placeholder="Select Year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableYears.map((year) => (
-                        <SelectItem key={year} value={year} className="font-medium">
-                          <div className="flex items-center space-x-2">
-                            <span>{year}</span>
-                            <Badge variant="outline" className="text-xs">
-                              {year === '2019' ? '1,075 policies' : 
-                               year === '2020' ? '1,165 policies' : 
-                               year === '2021' ? '1,049 policies' : ''}
-                            </Badge>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
               {/* Refresh Button */}
               <Button
@@ -323,88 +262,46 @@ export default function QuarterlyOverviewPage() {
       <div className="border-b bg-muted/30">
         <div className="container mx-auto px-4 py-3">
           {/* Desktop Filters */}
-          <div className="hidden md:flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Filter className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Filters:</span>
+          <div className="hidden md:flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
+                <Filter className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium">Filters:</span>
+              </div>
+              
+              {/* Year Filter */}
+              <div className="min-w-[110px]">
+                <Select
+                  value={selectedYear}
+                  onValueChange={handleYearChange}
+                >
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableYears.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year === 'all' ? 'All Years' : year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
             </div>
             
-            {/* Country Filter */}
-            <div className="min-w-[120px]">
-              <Select
-                value={filters.country.length > 0 ? filters.country[0] : 'all'}
-                onValueChange={(value) => 
-                  handleFilterChange('country', value === 'all' ? [] : [value])
-                }
+            <div className="flex items-center space-x-2">
+              {/* Reset Filters Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetFilters}
+                className="flex items-center space-x-1"
               >
-                <SelectTrigger className="h-8">
-                  <SelectValue placeholder="Country" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Countries</SelectItem>
-                  {filterOptions.country.map(country => (
-                    <SelectItem key={country} value={country}>
-                      {country}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <RefreshCw className="w-4 h-4" />
+                <span>Reset</span>
+              </Button>
             </div>
-
-            {/* Hub Filter */}
-            <div className="min-w-[100px]">
-              <Select
-                value={filters.hub.length > 0 ? filters.hub[0] : 'all'}
-                onValueChange={(value) => 
-                  handleFilterChange('hub', value === 'all' ? [] : [value])
-                }
-              >
-                <SelectTrigger className="h-8">
-                  <SelectValue placeholder="Hub" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Hubs</SelectItem>
-                  {filterOptions.hub.map(hub => (
-                    <SelectItem key={hub} value={hub}>
-                      {hub}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Region Filter */}
-            <div className="min-w-[100px]">
-              <Select
-                value={filters.region.length > 0 ? filters.region[0] : 'all'}
-                onValueChange={(value) => 
-                  handleFilterChange('region', value === 'all' ? [] : [value])
-                }
-              >
-                <SelectTrigger className="h-8">
-                  <SelectValue placeholder="Region" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Regions</SelectItem>
-                  {filterOptions.region.map(region => (
-                    <SelectItem key={region} value={region}>
-                      {region}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Reset Filters Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={resetFilters}
-              className="flex items-center space-x-1"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span>Reset</span>
-            </Button>
           </div>
 
           {/* Mobile Filter Toggle */}
@@ -437,68 +334,26 @@ export default function QuarterlyOverviewPage() {
             className="border-t bg-muted/50 p-4 space-y-4"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Country Filter */}
+              {/* Year Filter */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Country</label>
+                <label className="text-sm font-medium">Year</label>
                 <Select
-                  value={filters.country.length > 0 ? filters.country[0] : ""}
-                  onValueChange={(value) => handleFilterChange('country', value ? [value] : [])}
+                  value={selectedYear}
+                  onValueChange={handleYearChange}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select country" />
+                    <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Countries</SelectItem>
-                    {filterOptions.country.map(country => (
-                      <SelectItem key={country} value={country}>
-                        {country}
+                    {availableYears.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year === 'all' ? 'All Years' : year}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-
-              {/* Hub Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Hub</label>
-                <Select
-                  value={filters.hub.length > 0 ? filters.hub[0] : ""}
-                  onValueChange={(value) => handleFilterChange('hub', value ? [value] : [])}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select hub" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">All Hubs</SelectItem>
-                    {filterOptions.hub.map(hub => (
-                      <SelectItem key={hub} value={hub}>
-                        {hub}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Region Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Region</label>
-                <Select
-                  value={filters.region.length > 0 ? filters.region[0] : ""}
-                  onValueChange={(value) => handleFilterChange('region', value ? [value] : [])}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select region" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">All Regions</SelectItem>
-                    {filterOptions.region.map(region => (
-                      <SelectItem key={region} value={region}>
-                        {region}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              
             </div>
 
             {/* Filter Actions */}
@@ -519,33 +374,6 @@ export default function QuarterlyOverviewPage() {
         )}
       </div>
 
-      {/* Year Navigation Bar */}
-      <div className="border-b bg-muted/20">
-        <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center justify-center space-x-4">
-              <span className="text-sm font-medium text-muted-foreground">Quick Year Navigation:</span>
-              {availableYears.map((year) => (
-                <Button
-                  key={year}
-                  variant={selectedYear === year ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleYearChange(year)}
-                  className="min-w-[100px] flex items-center space-x-2"
-                >
-                  <span className="font-medium">{year}</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {year === '2019' ? '1,075' : 
-                     year === '2020' ? '1,165' : 
-                     year === '2021' ? '1,049' : ''}
-                  </Badge>
-                </Button>
-              ))}
-              <div className="text-xs text-muted-foreground ml-4">
-                Click any year to view quarterly breakdown
-              </div>
-            </div>
-        </div>
-      </div>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
@@ -570,7 +398,9 @@ export default function QuarterlyOverviewPage() {
                     <div className="flex items-center space-x-3">
                       <Calendar className="w-6 h-6 text-primary" />
                       <div>
-                        <h2 className="text-2xl font-bold text-primary">Year {selectedYear}</h2>
+                        <h2 className="text-2xl font-bold text-primary">
+                          {selectedYear === 'all' ? 'All Years' : `Year ${selectedYear}`}
+                        </h2>
                         <p className="text-sm text-muted-foreground">
                           Quarterly Performance Analysis
                         </p>

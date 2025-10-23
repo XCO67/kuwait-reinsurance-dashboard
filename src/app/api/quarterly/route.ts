@@ -208,7 +208,7 @@ function normalizeTimeData(record: ReinsuranceData): { year: number; quarter: st
       const monthMap: Record<string, string> = {
         'JAN': 'JAN', 'FEB': 'FEB', 'MAR': 'MAR', 'APR': 'APR', 'MAY': 'MAY', 'JUN': 'JUN',
         'JUL': 'JUL', 'AUG': 'AUG', 'SEP': 'SEP', 'OCT': 'OCT', 'NOV': 'NOV', 'DEC': 'DEC',
-        'JANUARY': 'JAN', 'FEBRUARY': 'FEB', 'MARCH': 'MAR', 'APRIL': 'APR', 'MAY': 'MAY', 'JUNE': 'JUN',
+        'JANUARY': 'JAN', 'FEBRUARY': 'FEB', 'MARCH': 'MAR', 'APRIL': 'APR', 'JUNE': 'JUN',
         'JULY': 'JUL', 'AUGUST': 'AUG', 'SEPTEMBER': 'SEP', 'OCTOBER': 'OCT', 'NOVEMBER': 'NOV', 'DECEMBER': 'DEC'
       };
       
@@ -227,7 +227,7 @@ function normalizeTimeData(record: ReinsuranceData): { year: number; quarter: st
     }
     
     // If still no quarter and we have a numeric value, convert it
-    if (!quarter && /^[1-4]$/.test(record.inceptionQuarter)) {
+    if (!quarter && record.inceptionQuarter && /^[1-4]$/.test(record.inceptionQuarter)) {
       quarter = `Q${record.inceptionQuarter}`;
     }
     
@@ -258,8 +258,9 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const year = url.searchParams.get("year");
     
+    // If no year is provided, process all years
     if (!year) {
-      return NextResponse.json({ error: "year is required" }, { status: 400 });
+      console.log('Quarterly API - No year specified, processing all years');
     }
 
     console.log('Quarterly API - GET request:', req.url);
@@ -280,20 +281,26 @@ export async function GET(req: Request) {
           normalizedQuarter: timeData.quarter
         };
       })
-      .filter(record => record !== null && record.normalizedYear === parseInt(year));
+      .filter(record => {
+        if (record === null) return false;
+        // If no year specified, include all records
+        if (!year) return true;
+        // Otherwise, filter by specific year
+        return record.normalizedYear === parseInt(year);
+      });
 
-    console.log('Quarterly API - Normalized data for year', year, ':', normalizedData.length, 'records');
+    console.log('Quarterly API - Normalized data for year', year || 'all', ':', normalizedData.length, 'records');
     
     // Debug: Show sample of normalized data
     if (normalizedData.length > 0) {
-      console.log('Quarterly API - Sample normalized records:', normalizedData.slice(0, 3).map(r => ({
+      console.log('Quarterly API - Sample normalized records:', normalizedData.slice(0, 3).map(r => r ? ({
         uy: r.uy,
         normalizedYear: r.normalizedYear,
         normalizedQuarter: r.normalizedQuarter,
         inceptionYear: r.inceptionYear,
         inceptionQuarter: r.inceptionQuarter,
         inceptionMonth: r.inceptionMonth
-      })));
+      }) : null).filter(Boolean));
     } else {
       // Debug: Show why no data is being normalized
       console.log('Quarterly API - No normalized data found. Sample of raw data:');
@@ -315,9 +322,11 @@ export async function GET(req: Request) {
     };
 
     normalizedData.forEach(record => {
-      const quarter = record.normalizedQuarter;
-      if (quarterlyGroups[quarter]) {
-        quarterlyGroups[quarter].push(record);
+      if (record) {
+        const quarter = record.normalizedQuarter;
+        if (quarterlyGroups[quarter]) {
+          quarterlyGroups[quarter].push(record);
+        }
       }
     });
 
@@ -372,6 +381,8 @@ export async function GET(req: Request) {
       const combinedRatioPct = lossRatioPct + acquisitionPct;
 
       quarters[quarterNum] = {
+        quarter: quarterNum,
+        year: year ? parseInt(year) : 0,
         policyCount,
         premium,
         acquisition,
@@ -400,7 +411,7 @@ export async function GET(req: Request) {
     const totalCombinedRatioPct = totalLossRatioPct + totalAcquisitionPct;
 
     const result = {
-      year: parseInt(year),
+      year: year ? parseInt(year) : 'all',
       quarters,
       total: {
         policyCount: totalPolicyCount,

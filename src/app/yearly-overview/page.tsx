@@ -21,8 +21,6 @@ import {
   DollarSign,
   AlertTriangle,
   Target,
-  ArrowUpRight,
-  ArrowDownRight,
   Users
 } from 'lucide-react';
 import { formatKD, formatPct, formatNumber } from '@/lib/format';
@@ -128,29 +126,6 @@ export default function YearlyOverviewPage() {
     return 'default';
   };
 
-  // Calculate year-over-year trends
-  const calculateTrends = (current: number, previous: number) => {
-    if (previous === 0) return null;
-    const change = ((current - previous) / previous) * 100;
-    return {
-      change: Math.abs(change),
-      direction: change > 0 ? 'up' : 'down',
-      isSignificant: Math.abs(change) > 5
-    };
-  };
-
-  // Get trend icon and color
-  const getTrendIcon = (trend: { isSignificant: boolean; direction: string } | null) => {
-    if (!trend || !trend.isSignificant) return null;
-    return trend.direction === 'up' ? 
-      <ArrowUpRight className="w-4 h-4 text-green-600" /> : 
-      <ArrowDownRight className="w-4 h-4 text-red-600" />;
-  };
-
-  const getTrendColor = (trend: { isSignificant: boolean; direction: string } | null) => {
-    if (!trend || !trend.isSignificant) return 'text-muted-foreground';
-    return trend.direction === 'up' ? 'text-green-600' : 'text-red-600';
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -297,53 +272,25 @@ export default function YearlyOverviewPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {[2019, 2020, 2021].map((year, index) => {
+                      {[2019, 2020, 2021].map((year) => {
                         const data = yearlyData.years?.[year];
                         if (!data) return null;
                         
-                        const previousYear = yearlyData.years?.[year - 1];
-                        const premiumTrend = previousYear ? calculateTrends(data.premium, previousYear.premium) : null;
-                        const policyTrend = previousYear ? calculateTrends(data.policyCount, previousYear.policyCount) : null;
                         
                         return (
                           <TableRow key={year} className="hover:bg-muted/30">
                             <TableCell className="font-medium">
-                              <div className="flex items-center space-x-2">
-                                <span className="inline-flex items-center justify-center w-8 h-8 bg-primary/10 text-primary text-sm font-bold rounded-full">
-                                  {year}
-                                </span>
-                                <span className="font-semibold">{year}</span>
-                              </div>
+                              <span className="font-semibold">{year}</span>
                             </TableCell>
                             <TableCell className="text-right">
-                              <div className="flex items-center justify-end space-x-2">
-                                <span className="font-mono text-sm">
-                                  {formatNumber(data.policyCount)}
-                                </span>
-                                {policyTrend && policyTrend.isSignificant && (
-                                  <div className="flex items-center space-x-1">
-                                    {getTrendIcon(policyTrend)}
-                                    <span className={`text-xs ${getTrendColor(policyTrend)}`}>
-                                      {formatPct(policyTrend.change)}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
+                              <span className="font-mono text-sm">
+                                {formatNumber(data.policyCount)}
+                              </span>
                             </TableCell>
                             <TableCell className="text-right">
-                              <div className="flex items-center justify-end space-x-2">
-                                <span className="font-mono text-sm">
-                                  {formatKD(data.premium)}
-                                </span>
-                                {premiumTrend && premiumTrend.isSignificant && (
-                                  <div className="flex items-center space-x-1">
-                                    {getTrendIcon(premiumTrend)}
-                                    <span className={`text-xs ${getTrendColor(premiumTrend)}`}>
-                                      {formatPct(premiumTrend.change)}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
+                              <span className="font-mono text-sm">
+                                {formatKD(data.premium)}
+                              </span>
                             </TableCell>
                             <TableCell className="text-right font-mono text-sm">
                               {formatKD(data.acquisition)}
@@ -372,20 +319,7 @@ export default function YearlyOverviewPage() {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                              {index > 0 && (
-                                <div className="flex items-center space-x-1">
-                                  {premiumTrend && premiumTrend.isSignificant ? (
-                                    <div className="flex items-center space-x-1">
-                                      {getTrendIcon(premiumTrend)}
-                                      <span className={`text-xs ${getTrendColor(premiumTrend)}`}>
-                                        {formatPct(premiumTrend.change)}
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <span className="text-xs text-muted-foreground">-</span>
-                                  )}
-                                </div>
-                              )}
+                              <span className="text-xs text-muted-foreground">-</span>
                             </TableCell>
                           </TableRow>
                         );

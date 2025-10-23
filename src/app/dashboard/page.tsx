@@ -64,8 +64,8 @@ export default function DashboardPage() {
         console.log('Dashboard - Loaded data:', dataResult.data.length, 'records');
         
         // Generate filter options from data
-        const years = [...new Set(dataResult.data.map((record: ReinsuranceData) => record.uy))].filter(Boolean).sort();
-        const countries = [...new Set(dataResult.data.map((record: ReinsuranceData) => record.countryName))].filter(Boolean).sort();
+        const years = [...new Set(dataResult.data.map((record: ReinsuranceData) => record.uy))].filter(Boolean).sort() as string[];
+        const countries = [...new Set(dataResult.data.map((record: ReinsuranceData) => record.countryName))].filter(Boolean).sort() as string[];
         
         setFilterOptions({
           years,
